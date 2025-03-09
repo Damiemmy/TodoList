@@ -1,8 +1,10 @@
-{
+{ "homepage": "http://Damiemmy.github.io/TodoList",
   "name": "myapp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "deploy":"gh-pages -D build",
+    "predeploy":"npm run build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
