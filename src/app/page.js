@@ -1,101 +1,97 @@
-import Image from "next/image";
+"use client"
+import {FaPlus} from 'react-icons/fa'
+import { useRef, useState } from 'react'  
+import NumberItemList from '@/Components/NumberItemList'
+import SearchItem from '@/Components/SearchItem'
+import ItemList from '@/Components/ItemList'
 
-export default function Home() {
+
+
+const page = () => {
+  const[newItem,setNewItem]=useState('')
+  const[search,setSearch]=useState('')
+
+  const[items,setItems]=useState(JSON.parse(localStorage.getItem('shoppinglist',)))
+      const handleCheck=(id)=>{
+        const listItem=items.map((item)=> item.id===id? {...item,checked: !item.checked}:item);
+        setItems(listItem);
+        localStorage.setItem('shoppinglist',JSON.stringify(listItem));
+      
+
+      }
+      const handleDelete=(id)=>{
+        const deleteitems=items.filter((item)=> item.id!==id)
+        setItems(deleteitems);
+        localStorage.setItem('shoppinglist',JSON.stringify(deleteitems));
+      }
+      const additems=(name)=>{
+        const id= items.length ? items[items.length-1].id +1:1;
+        const mynewitem={id,name,checked:false}
+        const listitems=[...items,mynewitem];
+        setItems(listitems);
+        localStorage.setItem('shoppinglist',JSON.stringify(listitems))
+      }
+      const HandleSubmit=(e)=>{
+        e.preventDefault();
+        console.log(newItem);
+        additems(newItem);
+        if(!newItem) return;
+        setNewItem('');
+
+      }
+      const inputRef=useRef();
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+ 
+    <div className="w-full p-4 justify-center h-[100%] bg-gray-200 items-center bg-grey mx-auto py-4">
+        <div className=" flex flex-col max-w-[700px] mx-auto text-center items-center justify-center">
+            <h1 className="font-bold text-xl md:text-3xl md:3xl py-3 rounded-md bg-black text-white w-full mt-1" >ToDoList</h1>
+            <form id='' className='flex px-20 w-full justify-center gap-2 md:gap-4 items-center my-2' onSubmit={(e)=>HandleSubmit(e)}>
+              <div className='rounded-md w-[70%] bg-white h-10 flex justify-center  text-center items-center'>
+              <input type="text" placeholder='Add a List' 
+              className='outline-none py-2 text-black flex-1 w-full p-2 bg-transparent'
+              ref={inputRef}
+              id='additem'
+              value={newItem}
+              onChange={(e)=>setNewItem(e.target.value)}
+              autoFocus
+              required
+              />
+              </div>
+              
+              <button type='submit' 
+              aria-label='Add Item'
+              onClick={()=>inputRef.current.focus()}
+              className='cursor-pointer bg-black flex  text-white font-bold rounded-md justify-center items-center w-10 h-10'>
+              <FaPlus size={15}  />
+              </button>
+             
+            </form>
+            <SearchItem
+            search={search}
+            setSearch={setSearch}/>
+           
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+       
+        <div className='bg-white w-[90%] mx-auto p-4 rounded-md shadow-md py-2'>
+      
+      {items.length ?( <div className='w-full'>
+        <ItemList
+        items={items.filter(item=>((item.name).toLowerCase()).includes(search.toLocaleLowerCase()))}
+        handleCheck={handleCheck}
+        handleDelete={handleDelete}
+        />
+            </div>):<h1 className='py-10'>Empty List</h1>}   
+         
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        
+      
+            </div>
+            <NumberItemList length={items.length}/>
+    
+   
     </div>
-  );
+  
+  )
 }
+
+export default page
